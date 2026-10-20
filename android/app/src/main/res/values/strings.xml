@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AlBaraa Real Estate</string>
+    <string name="title_activity_main">AlBaraa Real Estate</string>
+    <string name="package_name">com.albaraa.realestate</string>
+    <string name="custom_url_scheme">com.albaraa.realestate</string>
+</resources>

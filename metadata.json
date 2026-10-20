@@ -1,0 +1,6 @@
+{
+  "name": "شركة البراء النعيمي العقارية",
+  "description": "تطبيق متكامل للتسويق العقاري، الاستشارات، وحجز المواعيد مع لوحة تحكم لتنظيم الجداول الزمنية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

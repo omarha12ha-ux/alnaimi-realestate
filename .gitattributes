@@ -1,0 +1,23 @@
+# Normalise line endings on the way into the repository.
+#
+# The Docker image is built on Linux. If package.json or a shell script is
+# committed with CRLF, "npm run build" fails inside the image with a
+# "\r: command not found" style error that has nothing to do with the code.
+# Batch files are the exception: Windows needs CRLF for them to run.
+
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets must never be touched by the line-ending filter.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.mp4 binary

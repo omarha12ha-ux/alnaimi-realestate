@@ -1,0 +1,6 @@
+{
+  "appId": "com.albaraa.realestate",
+  "appName": "AlBaraa Real Estate",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

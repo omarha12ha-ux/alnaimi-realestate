@@ -1,0 +1,510 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "client"] },
+        "broker": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "phone": { "type": "string" },
+        "alertGovernorates": { "type": "array", "items": { "type": "string" } },
+        "permissions": {
+          "type": "object",
+          "description": "Fine-grained custom access permissions for admin capabilities"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Private remarks and notes stored by brokers and admins about the client/lead"
+        },
+        "notesUpdatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the broker notes were last updated"
+        },
+        "notesUpdatedBy": {
+          "type": "string",
+          "description": "Name or identifier of the broker or admin who wrote the remarks"
+        }
+      },
+      "required": ["uid", "email", "name", "role", "createdAt"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Real estate property details",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "price": { "type": "string" },
+        "location": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["Residential", "Commercial", "Land"] },
+        "coordinates": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+        "status": { "type": "string", "enum": ["available", "reserved", "sold"] },
+        "views": { "type": "integer", "description": "Number of times this property listing has been viewed" },
+        "governorate": { "type": "string", "description": "Syrian governorate for classification" }
+      },
+      "required": ["title", "price", "location", "images", "description", "type", "coordinates"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Corporate services details (Legal, Internet, Construction)",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "price": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" },
+        "category": { "type": "string", "enum": ["legal", "internet", "construction"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "price", "description", "category", "images", "createdAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Booking request for a property viewing or consultation",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "emailReminder": { "type": "boolean" },
+        "whatsappReminder": { "type": "boolean" },
+        "clientPhone": { "type": "string" },
+        "reminderSent": { "type": "boolean" },
+        "reminderSentAt": { "type": "string" },
+        "archived": { "type": "boolean" },
+        "subTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "progress": { "type": "integer" },
+              "status": { "type": "string", "enum": ["pending", "in_progress", "completed"] },
+              "updatedAt": { "type": "string" }
+            },
+            "required": ["id", "title", "progress", "status", "updatedAt"]
+          }
+        }
+      },
+      "required": ["clientName", "clientEmail", "date", "time", "status", "userId", "createdAt"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "User's favorite property listing",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string" },
+        "lists": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["propertyId", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "User review and rating for a property",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number", "minimum": 1, "maximum": 5 },
+        "feedback": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "rating", "feedback", "createdAt"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Contact Us form submission for general inquiries",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "subject", "message", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app notifications for users when their bookings are accepted",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["unread", "read"] },
+        "type": { "type": "string", "enum": ["appointment_accepted", "general", "property_alert"] },
+        "appointmentId": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "status", "type", "createdAt"]
+    },
+    "NewsletterSubscription": {
+      "title": "NewsletterSubscription",
+      "description": "Email signup for the real estate newsletter",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "SavedSearch": {
+      "title": "SavedSearch",
+      "description": "Saved user search filters and alert settings",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "propertyType": { "type": "string" },
+        "rooms": { "type": "string" },
+        "minPrice": { "type": "string" },
+        "maxPrice": { "type": "string" },
+        "governorate": { "type": "string" },
+        "searchQuery": { "type": "string" },
+        "alertsEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "alertsEnabled", "createdAt"]
+    },
+    "ExchangeRateSetting": {
+      "title": "ExchangeRateSetting",
+      "description": "System exchange rate for SYP to USD conversion",
+      "type": "object",
+      "properties": {
+        "rate": { "type": "number", "description": "1 USD to how many SYP (e.g. 15000)" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["rate", "updatedAt"]
+    },
+    "BrokerRating": {
+      "title": "BrokerRating",
+      "description": "User review and rating for a specific broker",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "brokerName": { "type": "string" },
+        "rating": { "type": "number", "minimum": 1, "maximum": 5 },
+        "feedback": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "brokerName", "rating", "createdAt"]
+    },
+    "Broker": {
+      "title": "Broker",
+      "description": "Real estate broker profile and commission tracking",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "commissionRate": { "type": "number", "description": "Broker commission rate in percentage" },
+        "dealsCount": { "type": "integer", "description": "Number of tracked real estate deals" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "governorate": { "type": "string", "description": "Assigned real estate area/governorate" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "email", "commissionRate", "dealsCount", "status", "createdAt"]
+    },
+    "PriceUpdateLog": {
+      "title": "PriceUpdateLog",
+      "description": "Log of a property price change",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "governorate": { "type": "string" },
+        "oldPrice": { "type": "number" },
+        "newPrice": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["propertyId", "propertyTitle", "governorate", "oldPrice", "newPrice", "updatedAt"]
+    },
+    "PropertyStatusLog": {
+      "title": "PropertyStatusLog",
+      "description": "Log of a property status change",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "governorate": { "type": "string" },
+        "oldStatus": { "type": "string" },
+        "newStatus": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["propertyId", "propertyTitle", "governorate", "newStatus", "updatedAt"]
+    },
+    "WhatsAppLog": {
+      "title": "WhatsAppLog",
+      "description": "Log of an automated WhatsApp notification alert",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sender": { "type": "string" },
+        "receiverName": { "type": "string" },
+        "receiverPhone": { "type": "string" },
+        "receiverEmail": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "oldStatus": { "type": "string" },
+        "newStatus": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "sender", "receiverName", "receiverPhone", "message", "status", "createdAt"]
+    },
+    "WhatsAppIncomingMessage": {
+      "title": "WhatsAppIncomingMessage",
+      "description": "WhatsApp message or complaint received from a client",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["complaint", "inquiry", "general"] },
+        "status": { "type": "string", "enum": ["pending_reply", "replied"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "replies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "replyText": { "type": "string" },
+              "sentAt": { "type": "string", "format": "date-time" }
+            },
+            "required": ["replyText", "sentAt"]
+          }
+        }
+      },
+      "required": ["clientName", "clientPhone", "message", "status", "createdAt"]
+    },
+    "Department": {
+      "title": "Department",
+      "description": "Company division or section along with its active supervisor info",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "supervisorName": { "type": "string" },
+        "supervisorPhone": { "type": "string" },
+        "supervisorEmail": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "subDepartments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "supervisorName": { "type": "string" },
+              "supervisorPhone": { "type": "string" },
+              "supervisorEmail": { "type": "string" },
+              "description": { "type": "string" },
+              "permissions": { "type": "array", "items": { "type": "string" } },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "title": { "type": "string" },
+                    "assignedTo": { "type": "string" },
+                    "status": { "type": "string", "enum": ["pending", "completed"] },
+                    "subCategoryId": { "type": "string" }
+                  },
+                  "required": ["id", "title", "assignedTo", "status"]
+                }
+              },
+              "createdAt": { "type": "string" }
+            },
+            "required": ["id", "name", "supervisorName", "supervisorPhone", "createdAt"]
+          }
+        },
+        "subCategories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "type": { "type": "string", "enum": ["real_estate", "service", "both"] },
+              "createdAt": { "type": "string" }
+            },
+            "required": ["id", "name", "type", "createdAt"]
+          }
+        }
+      },
+      "required": ["name", "supervisorName", "supervisorPhone", "status", "createdAt"]
+    },
+    "WebhookFailureTracker": {
+      "title": "WebhookFailureTracker",
+      "description": "Counter and status tracker for department or service sub-webhooks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["dept", "service"] },
+        "url": { "type": "string" },
+        "count": { "type": "integer" },
+        "lastResult": { "type": "string" },
+        "statusCode": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "type", "url", "count", "lastResult", "statusCode", "updatedAt"]
+    },
+    "TechnicalSpecialty": {
+      "title": "TechnicalSpecialty",
+      "description": "Custom technical classification for service representatives",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "createdAt"]
+    },
+    "Contract": {
+      "title": "Contract",
+      "description": "Digital Rent or Sale Contract containing property details, terms, and customer digital signatures",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "contractType": { "type": "string" },
+        "price": { "type": "number" },
+        "currency": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "terms": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "userId": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "signedAt": { "type": "string" },
+        "digitalSignature": {
+          "type": "object",
+          "properties": {
+            "dataUrl": { "type": "string" },
+            "signedAt": { "type": "string" },
+            "signerName": { "type": "string" }
+          }
+        }
+      },
+      "required": ["propertyId", "propertyTitle", "contractType", "price", "currency", "clientName", "clientEmail", "clientPhone", "userId", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/webhook_failure_trackers/{trackerId}": {
+      "schema": "WebhookFailureTracker",
+      "description": "Tracking logs and counters for sub-webhook consecutive failure alerts"
+    },
+    "/technical_specialties/{specialtyId}": {
+      "schema": "TechnicalSpecialty",
+      "description": "Custom technical classifications for service representatives"
+    },
+    "/departments/{departmentId}": {
+      "schema": "Department",
+      "description": "Company departments and primary supervisor details"
+    },
+    "/whatsapp_incoming_messages/{msgId}": {
+      "schema": "WhatsAppIncomingMessage",
+      "description": "WhatsApp messages and complaints incoming from clients"
+    },
+    "/whatsapp_logs/{logId}": {
+      "schema": "WhatsAppLog",
+      "description": "Automated WhatsApp dispatch logs history"
+    },
+    "/price_updates_log/{logId}": {
+      "schema": "PriceUpdateLog",
+      "description": "Property price update history log"
+    },
+    "/property_status_log/{logId}": {
+      "schema": "PropertyStatusLog",
+      "description": "Property status change history log"
+    },
+    "/brokers/{brokerId}": {
+      "schema": "Broker",
+      "description": "Registered real estate brokers"
+    },
+    "/settings/{settingsId}": {
+      "schema": "ExchangeRateSetting",
+      "description": "System settings and exchange rate document"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/users/{userId}/favorites/{propertyId}": {
+      "schema": "Favorite",
+      "description": "User's favorite property listings"
+    },
+    "/broker_ratings/{ratingId}": {
+      "schema": "BrokerRating",
+      "description": "Reviews and ratings for brokers"
+    },
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Listed properties"
+    },
+    "/properties/{propertyId}/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Property reviews and ratings"
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Company services"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Viewing and consultation bookings"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "General customer contact inquiries"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User in-app notifications"
+    },
+    "/newsletter_subscriptions/{subscriptionId}": {
+      "schema": "NewsletterSubscription",
+      "description": "Public newsletter signups"
+    },
+    "/saved_searches/{searchId}": {
+      "schema": "SavedSearch",
+      "description": "User saved search criteria and alerts"
+    },
+    "/contracts/{contractId}": {
+      "schema": "Contract",
+      "description": "Digital rent or sale contracts signed by clients"
+    }
+  }
+}

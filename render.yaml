@@ -1,0 +1,69 @@
+# Render blueprint — "New +" -> "Blueprint" from this repo, or create a Web
+# Service and pick this repo with Runtime: Docker.
+#
+# SECRETS ARE NOT LISTED HERE ON PURPOSE. Every value below is declared with
+# `sync: false`, which means Render shows it in the Blueprint form and waits
+# for you to type it. The value itself is never stored in this file, so the
+# blueprint stays safe to keep in version control.
+#
+# Region: Frankfurt is the closest Render region to the Levant, so QR visitors
+# get the lowest latency. Change to oregon/singapore only if you move users.
+
+services:
+  - type: web
+    name: alnaimi-realestate
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    # No `branch:` pin on purpose. When the blueprint pins a branch that does
+    # not exist in the repository, Render has nothing to build and the service
+    # answers 404 on every path. Leaving it unset uses the repository default
+    # branch, which is whatever GitHub Desktop created.
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # --- administrator identity ---
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: VITE_ADMIN_EMAILS
+        sync: false
+      # --- server-side secrets, never shipped to the browser ---
+      - key: ADMIN_API_TOKEN
+        sync: false
+      - key: INTERNAL_API_TOKEN
+        sync: false
+      # --- optional: Firebase service account for reminders and backups ---
+      # Leave empty to run without them; the server then skips the reminder
+      # and backup jobs instead of failing the request.
+      - key: FIREBASE_SERVICE_EMAIL
+        sync: false
+        optional: true
+      - key: FIREBASE_SERVICE_PASSWORD
+        sync: false
+        optional: true
+      # --- commerce and messaging ---
+      - key: BOOKING_FEE_CENTS
+        sync: false
+        optional: true
+      - key: STRIPE_CURRENCY
+        sync: false
+        optional: true
+      - key: WHATSAPP_PROVIDER
+        sync: false
+        optional: true
+      - key: SENDER_WHATSAPP_NUMBER
+        sync: false
+        optional: true
+      # --- optional integrations ---
+      - key: GEMINI_API_KEY
+        sync: false
+        optional: true
+      - key: GOOGLE_MAPS_PLATFORM_KEY
+        sync: false
+        optional: true
+      - key: DISABLE_HMR
+        value: "true"

@@ -1,0 +1,23 @@
+# Credentials must never enter the image. Cloud Run supplies them at runtime
+# through environment variables and workload identity.
+.env
+.env.*
+secrets/
+*service-account*.json
+*firebase-adminsdk*.json
+*credential*.json
+*key*.json
+
+# Build output and dependencies are produced inside the image.
+dist/
+node_modules/
+android/
+.git/
+.gitignore
+
+# Local artefacts
+*.log
+*.zip
+.vscode/
+.idea/
+.DS_Store
