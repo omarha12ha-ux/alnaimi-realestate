@@ -2095,20 +2095,29 @@ export default function App() {
   };
 
   useEffect(() => {
-    const q = collection(db, 'users');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list: any[] = [];
-      snapshot.forEach((doc) => {
-        list.push({ uid: doc.id, ...doc.data() });
+    // Only an authenticated session may read the users collection. Subscribing
+    // on mount used to make every signed-out visitor trip the Firestore rules
+    // and spew "Missing or insufficient permissions" into the console, which
+    // looked broken in devtools on phones.
+    let unsubscribe: undefined | (() => void) = undefined;
+    if (currentUser) {
+      const q = collection(db, 'users');
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const list: any[] = [];
+        snapshot.forEach((doc) => {
+          list.push({ uid: doc.id, ...doc.data() });
+        });
+        setUsers(list);
+        setUsersLoading(false);
+      }, () => {
+        setUsersLoading(false);
       });
-      setUsers(list);
+    } else if (!authLoading) {
+      setUsers([]);
       setUsersLoading(false);
-    }, (err) => {
-      console.error("Error in users snapshot:", err);
-      setUsersLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    }
+    return () => { unsubscribe?.(); };
+  }, [currentUser, authLoading]);
 
   const fetchUsers = async () => {
     setUsersLoading(true);
@@ -2119,8 +2128,10 @@ export default function App() {
         list.push({ uid: doc.id, ...doc.data() });
       });
       setUsers(list);
-    } catch (err) {
-      console.error("Error fetching users:", err);
+    } catch {
+      // The same Firestore rules failure can hit the one-shot fetch; keep the
+      // console clean for signed-out visitors.
+      setUsers([]);
     } finally {
       setUsersLoading(false);
     }

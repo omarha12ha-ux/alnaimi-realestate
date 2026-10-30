@@ -109,6 +109,32 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- شاشة التحميل: تظهر فوراً بينما يجلب الهاتف حِزم جافاسكربت، -->
+    <!-- ثم تُزال ذاتياً بأول عرض يقوم به React داخل #root -->
+    <div id="app-loader" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0A192F;transition:opacity .35s ease">
+      <img src="/icon-192.png" alt="" style="width:72px;height:72px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.4)" />
+      <div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.15);border-top-color:#D4AF37;border-radius:50%;animation:aln-spin .9s linear infinite"></div>
+      <p style="color:#D4AF37;font-size:13px;font-weight:700;letter-spacing:.5px;margin:0">شركة البراء النعيمي العقارية</p>
+    </div>
+    <style>#app-loader{font-family:system-ui,sans-serif}@keyframes aln-spin{to{transform:rotate(360deg)}}</style>
+    <script>
+      (function () {
+        var root = document.getElementById('root');
+        if (!root) return;
+        var gone = false;
+        function dismiss() {
+          if (gone) return;
+          gone = true;
+          var l = document.getElementById('app-loader');
+          if (!l) return;
+          l.style.opacity = '0';
+          setTimeout(function () { l.remove(); }, 400);
+          obs.disconnect();
+        }
+        var obs = new MutationObserver(dismiss);
+        obs.observe(root, { childList: true });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
