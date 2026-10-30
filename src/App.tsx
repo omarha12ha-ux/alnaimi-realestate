@@ -7486,63 +7486,121 @@ label: "\u0645\u062C\u0645\u0639 \u0623\u0648 \u0645\u0643\u0627\u062A\u0628"
           <div className="bg-white p-3.5 rounded-[2rem] border border-brand-navy/5 shadow-md flex flex-col gap-1.5 text-right">
             <span className="text-[10px] uppercase font-black tracking-wider text-brand-navy/40 px-3 py-1.5 block">قائمة الاستعراض</span>
             
-            {[
-              { id: 'list', label: 'المواعيد والحجوزات', icon: '📅', perm: 'manageAppointments', badge: appointments.length },
-              { id: 'analytics', label: 'التحليلات والإحصائيات', icon: '📊', perm: 'viewAnalytics' },
-              { id: 'offers', label: 'إدارة العروض العقارية', icon: '🏠', perm: 'manageProperties', badge: allProperties.length },
-              { id: 'contracts-mgmt', label: 'عقود البيع والإيجار الرقمية ✍️', icon: '✍️', perm: 'manageProperties', badge: contractsList.length },
-              { id: 'corporate-deals', label: 'عروض الشركات الكبرى 💎', icon: '🏢', perm: 'manageCorporateDeals' },
-              { id: 'services', label: 'إدارة خدمات الشركة', icon: '🛠️', perm: 'manageServices', badge: allServices.length },
-              { id: 'technical-audit', label: 'تدقيق الخدمات الفنية 📋', icon: '📋', perm: 'manageServices' },
-              { id: 'admins', label: 'الهيكل الإداري والأقسام', icon: '👥', perm: 'manageUsers' },
-              { id: 'blocked-users', label: 'إدارة وصلاحيات وترقية المستخدمين', icon: '👥', perm: 'manageUsers', badge: users.filter(u => u.blocked).length },
-              { id: 'clients-classification', label: 'تصنيف وتحليل العملاء 👥', icon: '🏷️', perm: 'manageUsers', badge: getUniqueClients().length },
-              { id: 'client-files', label: 'ملفات وبيانات العملاء 📁', icon: '📁', perm: 'manageUsers', badge: users.length },
-              { id: 'vip-requests', label: 'طلبات اشتراك VIP', icon: '👑', perm: 'manageVIP', vipBadge: true },
-              { id: 'brokers', label: 'إدارة الوسطاء', icon: '💼', perm: 'manageBrokers' },
-              { id: 'referrals-mgmt', label: 'نظام الدعوات والوسطاء 🎁', icon: '🎁', perm: 'manageBrokers' },
-              { id: 'service-reps', label: 'إدارة مندوبي الخدمات 🛠️', icon: '🛠️', perm: 'manageBrokers' },
-              { id: 'technical-specialties', label: 'مصفوفة التخصصات الفنية 📐', icon: '📐', perm: 'manageBrokers', badge: technicalSpecialties.length },
-              { id: 'archive', label: 'الأرشيف العقاري', icon: '📦', perm: 'manageProperties' },
-              { id: 'inquiries', label: 'الاستفسارات والرسائل', icon: '✉️', perm: 'manageInquiries' },
-              { id: 'chats', label: 'الاستشارات الفورية', icon: '💬', perm: 'manageChats' },
-              { id: 'whatsapp', label: 'تنبيهات واتساب', icon: '📱', perm: 'manageWhatsApp' },
-              { id: 'notifications', label: 'بث وإدارة الإشعارات', icon: '🔑', perm: 'manageNotifications' },
-              { id: 'branding', label: 'تعديل الهوية واللوغو', icon: '🎨', perm: 'manageBranding' },
-              { id: 'app-downloads', label: 'رفع وتحميل تطبيق الشركة', icon: '📲', perm: 'manageBranding' },
-              { id: 'ai-image-studio', label: 'استوديو الصور بالذكاء الاصطناعي 🎨', icon: '🎨', perm: 'manageBranding' },
-              { id: 'ai-video-studio', label: 'استوديو فيديو Veo بالذكاء الاصطناعي 🎬', icon: '🎬', perm: 'manageBranding' },
-            ].map(tab => {
-              if (!hasPermission(tab.perm)) return null;
-              return (
-                <button 
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={cn(
-                    "w-full px-4 py-3 rounded-xl text-xs font-black transition-all flex items-center justify-between cursor-pointer text-right",
-                    tab.id === 'whatsapp' && activeTab === 'whatsapp' ? "bg-[#1A2E40] text-white shadow" :
-                    tab.id === 'vip-requests' && activeTab === 'vip-requests' ? "bg-[#0D223F] text-brand-gold shadow-md shadow-brand-gold/10 border border-brand-gold/20" :
-                    tab.id === 'branding' && activeTab === 'branding' ? "bg-brand-gold text-brand-navy shadow" :
-                    activeTab === tab.id ? "bg-brand-navy text-brand-gold shadow" : "text-brand-navy/60 hover:bg-brand-navy/5"
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-sm shrink-0">{tab.icon}</span>
-                    <span>{tab.label}</span>
+            {(() => {
+              // The tabs are grouped the way an operator works through a day:
+              // daily traffic first, then the property business, then clients,
+              // the team, communication and finally the system tools. The
+              // permissions and live counters are unchanged from the flat list
+              // that was here before — only the order and the grouping changed.
+              const groups: {
+                title: string;
+                icon: string;
+                tabs: { id: string; label: string; icon: string; perm: string; badge?: number; vipBadge?: boolean }[];
+              }[] = [
+                {
+                  title: 'العمليات اليومية',
+                  icon: '⚡',
+                  tabs: [
+                    { id: 'list', label: 'المواعيد والحجوزات', icon: '📅', perm: 'manageAppointments', badge: appointments.length },
+                    { id: 'analytics', label: 'التحليلات والإحصائيات', icon: '📊', perm: 'viewAnalytics' },
+                    { id: 'inquiries', label: 'الاستفسارات والرسائل', icon: '✉️', perm: 'manageInquiries' },
+                    { id: 'chats', label: 'الاستشارات الفورية', icon: '💬', perm: 'manageChats' },
+                  ],
+                },
+                {
+                  title: 'العقارات والعروض',
+                  icon: '🏠',
+                  tabs: [
+                    { id: 'offers', label: 'إدارة العروض العقارية', icon: '🏠', perm: 'manageProperties', badge: allProperties.length },
+                    { id: 'contracts-mgmt', label: 'عقود البيع والإيجار الرقمية ✍️', icon: '✍️', perm: 'manageProperties', badge: contractsList.length },
+                    { id: 'corporate-deals', label: 'عروض الشركات الكبرى 💎', icon: '🏢', perm: 'manageCorporateDeals' },
+                    { id: 'services', label: 'إدارة خدمات الشركة', icon: '🛠️', perm: 'manageServices', badge: allServices.length },
+                    { id: 'technical-audit', label: 'تدقيق الخدمات الفنية 📋', icon: '📋', perm: 'manageServices' },
+                    { id: 'archive', label: 'الأرشيف العقاري', icon: '📦', perm: 'manageProperties' },
+                  ],
+                },
+                {
+                  title: 'العملاء والمشتركون',
+                  icon: '👥',
+                  tabs: [
+                    { id: 'clients-classification', label: 'تصنيف وتحليل العملاء 👥', icon: '🏷️', perm: 'manageUsers', badge: getUniqueClients().length },
+                    { id: 'client-files', label: 'ملفات وبيانات العملاء 📁', icon: '📁', perm: 'manageUsers', badge: users.length },
+                    { id: 'vip-requests', label: 'طلبات اشتراك VIP', icon: '👑', perm: 'manageVIP', vipBadge: true },
+                    { id: 'blocked-users', label: 'إدارة وصلاحيات وترقية المستخدمين', icon: '👥', perm: 'manageUsers', badge: users.filter(u => u.blocked).length },
+                  ],
+                },
+                {
+                  title: 'الفريق والوسطاء',
+                  icon: '💼',
+                  tabs: [
+                    { id: 'brokers', label: 'إدارة الوسطاء', icon: '💼', perm: 'manageBrokers' },
+                    { id: 'service-reps', label: 'إدارة مندوبي الخدمات 🛠️', icon: '🛠️', perm: 'manageBrokers' },
+                    { id: 'technical-specialties', label: 'مصفوفة التخصصات الفنية 📐', icon: '📐', perm: 'manageBrokers', badge: technicalSpecialties.length },
+                    { id: 'referrals-mgmt', label: 'نظام الدعوات والوسطاء 🎁', icon: '🎁', perm: 'manageBrokers' },
+                  ],
+                },
+                {
+                  title: 'التواصل',
+                  icon: '📱',
+                  tabs: [
+                    { id: 'whatsapp', label: 'تنبيهات واتساب', icon: '📱', perm: 'manageWhatsApp' },
+                    { id: 'notifications', label: 'بث وإدارة الإشعارات', icon: '🔑', perm: 'manageNotifications' },
+                  ],
+                },
+                {
+                  title: 'النظام والهوية',
+                  icon: '⚙️',
+                  tabs: [
+                    { id: 'admins', label: 'الهيكل الإداري والأقسام', icon: '👥', perm: 'manageUsers' },
+                    { id: 'branding', label: 'تعديل الهوية واللوغو', icon: '🎨', perm: 'manageBranding' },
+                    { id: 'app-downloads', label: 'رفع وتحميل تطبيق الشركة', icon: '📲', perm: 'manageBranding' },
+                    { id: 'ai-image-studio', label: 'استوديو الصور بالذكاء الاصطناعي 🎨', icon: '🎨', perm: 'manageBranding' },
+                    { id: 'ai-video-studio', label: 'استوديو فيديو Veo بالذكاء الاصطناعي 🎬', icon: '🎬', perm: 'manageBranding' },
+                  ],
+                },
+              ];
+
+              return groups.map(group => {
+                const visible = group.tabs.filter(t => hasPermission(t.perm as any));
+                if (visible.length === 0) return null;
+                return (
+                  <div key={group.title} className="pt-1">
+                    <span className="flex items-center gap-1.5 text-[9px] uppercase font-black tracking-wider text-brand-navy/40 px-3 pt-1.5 pb-1 border-t border-brand-navy/5">
+                      <span aria-hidden>{group.icon}</span>
+                      {group.title}
+                    </span>
+                    {visible.map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={cn(
+                          "w-full px-4 py-3 rounded-xl text-xs font-black transition-all flex items-center justify-between cursor-pointer text-right",
+                          tab.id === 'whatsapp' && activeTab === 'whatsapp' ? "bg-[#1A2E40] text-white shadow" :
+                          tab.id === 'vip-requests' && activeTab === 'vip-requests' ? "bg-[#0D223F] text-brand-gold shadow-md shadow-brand-gold/10 border border-brand-gold/20" :
+                          tab.id === 'branding' && activeTab === 'branding' ? "bg-brand-gold text-brand-navy shadow" :
+                          activeTab === tab.id ? "bg-brand-navy text-brand-gold shadow" : "text-brand-navy/60 hover:bg-brand-navy/5"
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-sm shrink-0">{tab.icon}</span>
+                          <span>{tab.label}</span>
+                        </div>
+                        {tab.badge !== undefined && (
+                          <span className={cn("text-[9px] px-2 py-0.5 rounded font-mono font-black", activeTab === tab.id ? "bg-white/10 text-brand-gold" : "bg-brand-navy/5 text-brand-navy/40")}>
+                            {tab.badge}
+                          </span>
+                        )}
+                        {tab.vipBadge && users.filter(u => u.vipRequestStatus === 'pending').length > 0 && (
+                          <span className="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded-full font-mono font-black animate-pulse">
+                            {users.filter(u => u.vipRequestStatus === 'pending').length}
+                          </span>
+                        )}
+                      </button>
+                    ))}
                   </div>
-                  {tab.badge !== undefined && (
-                    <span className={cn("text-[9px] px-2 py-0.5 rounded font-mono font-black", activeTab === tab.id ? "bg-white/10 text-brand-gold" : "bg-brand-navy/5 text-brand-navy/40")}>
-                      {tab.badge}
-                    </span>
-                  )}
-                  {tab.vipBadge && users.filter(u => u.vipRequestStatus === 'pending').length > 0 && (
-                    <span className="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded-full font-mono font-black animate-pulse">
-                      {users.filter(u => u.vipRequestStatus === 'pending').length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
 
           {/* Currency Rate Controller Card in sidebar */}

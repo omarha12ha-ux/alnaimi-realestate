@@ -32,10 +32,10 @@ export function BottomNavigation({ currentView, setView, isAdmin, onOpenNotifica
   const navItems = [
     { name: 'home', label: 'الرئيسية', icon: Home },
     { name: 'properties', label: 'العقارات', icon: Building2 },
-    { name: 'corporate-deals', label: 'الشركات', icon: Briefcase },
-    { name: 'decor-showcase', label: 'الديكور', icon: Palette },
     { name: 'vip-properties', label: 'VIP', icon: Users },
     { name: 'user-schedule', label: 'المواعيد', icon: Calendar },
+    { name: 'corporate-deals', label: 'الشركات', icon: Briefcase },
+    { name: 'decor-showcase', label: 'الديكور', icon: Palette },
     { name: 'contact-us', label: 'اتصل بنا', icon: Phone },
     ...(isAdmin ? [{ name: 'dashboard', label: 'التحكم 🛡️', icon: LayoutDashboard }] : [])
   ];
