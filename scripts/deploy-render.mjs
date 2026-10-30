@@ -9,7 +9,7 @@
 
 const API = "https://api.render.com/v1";
 
-const REPO = "omarha12ha-ux/alnaimi-realestate";
+const REPO = "https://github.com/omarha12ha-ux/alnaimi-realestate";
 const SERVICE_NAME = "alnaimi-realestate";
 const BRANCH = "main";
 
@@ -62,11 +62,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
   const owners = await api("GET", "/owners");
-  const owner = owners[0];
+  // The v1 API returns each owner wrapped in a cursor object.
+  const owner = owners[0]?.owner || owners[0];
   console.log("owner:", owner.name, owner.id);
 
   const services = await api("GET", "/services?limit=100");
-  let service = services.find((s) => s.repo && s.repo.includes("alnaimi-realestate"));
+  let service = services
+    .map((s) => s.service || s)
+    .find((s) => (s.repo || "").includes("alnaimi-realestate") || (s.name || "").includes("alnaimi"));
+
 
   if (!service) {
     console.log("creating the service...");
@@ -75,18 +79,20 @@ async function main() {
       ownerId: owner.id,
       repo: REPO,
       branch: BRANCH,
-      type: "web",
-      runtime: "docker",
-      plan: "free",
-      region: "frankfurt",
-      dockerContext: ".",
-      dockerfilePath: "./Dockerfile",
-      healthCheckPath: "/api/health",
+      type: "web_service",
+      serviceDetails: {
+        runtime: "docker",
+        plan: "free",
+        region: "frankfurt",
+        healthCheckPath: "/api/health",
+      },
     });
+    service = service.service || service;
     console.log("  created:", service.id);
   } else {
     console.log("service already exists:", service.id);
   }
+
 
   console.log("writing the environment variables...");
   await api(
@@ -96,14 +102,15 @@ async function main() {
   );
 
   const envList = await api("GET", `/services/${service.id}/env-vars`);
-  const got = new Map(envList.map((e) => [e.envVar.key, e.envVar.value]));
+  const got = new Map(envList.map((e) => (e.envVar || e).key).map((k, i) => [k, (envList[i].envVar || envList[i]).value]));
   for (const key of Object.keys(ENV_VARS)) {
     console.log(`  ${got.has(key) ? "ok " : "MISS"} ${key}`);
   }
 
   console.log("starting the deploy...");
-  const deploy = await api("POST", `/services/${service.id}/deploys`, { clearCache: "true" });
-  console.log("  deploy:", deploy.id);
+  const deploy = await api("POST", `/services/${service.id}/deploys`, { clearCache: "clear" });
+  const deployId = deploy.id || deploy.deploy?.id;
+  console.log("  deploy:", deployId);
 
   let status = "";
   for (let i = 0; i < 120; i++) {
