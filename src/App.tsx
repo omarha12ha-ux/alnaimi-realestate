@@ -6692,7 +6692,7 @@ label: "\u0645\u062C\u0645\u0639 \u0623\u0648 \u0645\u0643\u0627\u062A\u0628"
         />
       )}
       {/* Toast Notifications System */}
-      <div className="fixed top-6 left-6 z-[99999] flex flex-col gap-4 max-w-sm w-full no-print pointer-events-none" style={{ direction: 'rtl' }}>
+      <div className="fixed top-6 left-6 z-[99999] flex flex-col gap-4 max-w-sm w-[calc(100vw-3rem)] no-print pointer-events-none" style={{ direction: 'rtl' }}>
         <AnimatePresence>
           {toasts.map((toast) => (
             <motion.div

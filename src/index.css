@@ -32,6 +32,15 @@
     width: 100% !important;
     min-height: 100vh !important;
   }
+
+  /* The page must never be wider than the device: decorative absolutely
+     positioned blobs (500-600px blurred circles) and fixed toast stacks used
+     to inflate scrollWidth on ~390px phones, shoving every view sideways.
+     `clip` (not `hidden`) does not turn the document into a scroll container,
+     it just discards anything painted past the edge. */
+  html, body {
+    overflow-x: clip !important;
+  }
   
   body {
     @apply bg-brand-cream text-brand-navy font-sans antialiased transition-colors duration-300;

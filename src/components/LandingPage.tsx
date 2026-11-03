@@ -79,8 +79,11 @@ export default function LandingPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#071324] text-white flex flex-col font-sans overflow-x-hidden selection:bg-brand-gold/30 selection:text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-[#071324] text-white flex flex-col font-sans relative overflow-x-hidden overflow-y-hidden selection:bg-brand-gold/30 selection:text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background Decorative Radial Gradients */}
+      {/* Clipped by the overflow-hidden root above: on a 390px phone these
+          500-600px blurred circles used to widen the document and shove the
+          whole page sideways. */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none -z-10" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none -z-10" />
 
