@@ -6322,29 +6322,29 @@ label: "\u0645\u062C\u0645\u0639 \u0623\u0648 \u0645\u0643\u0627\u062A\u0628"
       <button
         type="button"
         onClick={handleGlobalLogout}
-        className="fixed top-4 right-4 z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 px-3.5 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-black border border-rose-500/20 transition-all cursor-pointer"
+        className="fixed top-4 right-4 z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 p-2.5 sm:px-3.5 sm:py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-black border border-rose-500/20 transition-all cursor-pointer"
         title="تسجيل الخروج من الحساب"
       >
         <LogOut size={16} />
-        <span>تسجيل الخروج</span>
+        <span className="hidden sm:inline">تسجيل الخروج</span>
       </button>
 
       {/* Floating Profile Button at Top Right */}
       <button
         type="button"
         onClick={() => setIsProfileOpen(true)}
-        className="fixed top-4 right-36 z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-brand-navy dark:text-brand-gold hover:bg-brand-cream/20 px-3.5 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-black border border-brand-navy/10 transition-all cursor-pointer"
+        className="fixed top-4 right-[4.5rem] sm:right-36 z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-brand-navy dark:text-brand-gold hover:bg-brand-cream/20 p-2.5 sm:px-3.5 sm:py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-black border border-brand-navy/10 transition-all cursor-pointer"
         title="الملف الشخصي والعقود المعروضة للتوقيع"
       >
         <User size={16} />
-        <span>الملف الشخصي 👤</span>
+        <span className="hidden sm:inline">الملف الشخصي 👤</span>
       </button>
 
       {/* Floating Notifications Bell Button at Top Right */}
       <button
         type="button"
         onClick={() => setIsNotificationsOpen(true)}
-        className="fixed top-4 right-72 sm:right-72 z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-brand-navy dark:text-brand-gold hover:bg-brand-cream/20 px-3.5 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-black border border-brand-navy/10 transition-all cursor-pointer group"
+        className="fixed top-4 right-72 hidden md:flex z-50 bg-white/90 dark:bg-[#0A192F]/90 backdrop-blur-md text-brand-navy dark:text-brand-gold hover:bg-brand-cream/20 px-3.5 py-2.5 rounded-2xl shadow-xl items-center gap-2 text-xs font-black border border-brand-navy/10 transition-all cursor-pointer group"
         title="مركز الإشعارات والتنبيهات 🔔"
       >
         <div className="relative">
@@ -6368,11 +6368,11 @@ label: "\u0645\u062C\u0645\u0639 \u0623\u0648 \u0645\u0643\u0627\u062A\u0628"
         <button
           type="button"
           onClick={() => setView(view === 'dashboard' ? 'home' : 'dashboard')}
-          className="fixed top-4 left-4 z-50 bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-navy hover:opacity-95 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-black border border-white/20 transition-all cursor-pointer animate-bounce"
+          className="fixed top-4 left-4 z-50 bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-navy hover:opacity-95 p-2.5 sm:px-4 sm:py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-black border border-white/20 transition-all cursor-pointer sm:animate-bounce"
           title={view === 'dashboard' ? "العودة إلى الواجهة الرئيسية" : "الانتقال إلى لوحة التحكم الإدارية"}
         >
           <Shield size={16} />
-          <span>{view === 'dashboard' ? "الرئيسية 🏠" : "لوحة التحكم الإدارية 🛡️"}</span>
+          <span className="hidden sm:inline">{view === 'dashboard' ? "الرئيسية 🏠" : "لوحة التحكم الإدارية 🛡️"}</span>
         </button>
       )}
 

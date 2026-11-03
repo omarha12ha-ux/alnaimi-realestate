@@ -74,7 +74,7 @@ export default function InstallAppButton({ className = '' }: { className?: strin
   };
 
   return (
-    <div className={`fixed bottom-5 left-5 z-[60] ${className}`}>
+    <div className={`fixed bottom-20 md:bottom-5 left-5 z-[60] ${className}`}>
       <button
         type="button"
         onClick={install}
